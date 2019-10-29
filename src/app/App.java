@@ -8,9 +8,10 @@ public class App {
 
     public static void main(String[] args) {
         String[] data = new String[100]; // read max 100 line
-        int addr = 0;
-        Map<String, Integer> label = new HashMap<String, Integer>();
+        int addr = 0;// addr of line
+        Map<String, Integer> label = new HashMap<String, Integer>(); //store label of each line
 
+        label.get("Five"); // =5
         // read code form file
         try {
             File myObj = new File("assembly/count5to0.txt");
@@ -30,9 +31,9 @@ public class App {
         // TO DO CODE HERE
         addr = 0;
         while (data[addr] != null) {
-            String[] arrOfdata = data[addr].split("	");
-            String BinaryCode = "0000000";
-            int macCode = 0;
+            String[] arrOfdata = data[addr].split("	"); //feild of instruction
+            String BinaryCode = "0000000"; //machinecode binary bit
+            int macCode = 0; // machinecode decimal bit
             if (arrOfdata[0] != "") {
                 label.put(arrOfdata[0], addr); // set label to addr
                 // label.get(arrOfdata[]) to get addr
@@ -41,6 +42,7 @@ public class App {
             if (arrOfdata[1].equals("add")) {
                 BinaryCode += "000";
                 // TO DO SOMETHING
+                
                 //macCode = Integer.parseInt(BinaryCode,2);
             } else if (arrOfdata[1].equals("nand")) {
                 BinaryCode += "001";
@@ -61,6 +63,7 @@ public class App {
             } else if (arrOfdata[1].equals("jalr")) {
                 BinaryCode += "101";
                 // TO DO SOMETHING
+
                 //macCode = Integer.parseInt(BinaryCode,2);
             } else if (arrOfdata[1].equals("halt")) {
                 BinaryCode += "110";
