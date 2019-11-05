@@ -2,7 +2,6 @@ package app;
 
 import java.io.*;
 import java.util.*;
-import java.util.Scanner;
 
 public class App {
 
@@ -92,11 +91,12 @@ public class App {
             r++;
         }
 
+        String[] macCode = new String[r];
         addr = 0;
         while (data[addr] != null) {
             String[] arrOfdata = data[addr].split("	"); // feild of instruction
             String BinaryCode = "0000000"; // machinecode binary bit
-            int macCode = 0; // machinecode decimal bit
+            int printBiCode = 0; // machinecode decimal bit
 
             if (arrOfdata[1].equals("add")) {
                 BinaryCode += "000";
@@ -106,7 +106,7 @@ public class App {
                 for (int indexz = 3; indexz <= 15; indexz++)
                     BinaryCode = BinaryCode + "0";
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[4]), 3);
-                macCode = Integer.parseInt(BinaryCode, 2);
+                printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("nand")) {
                 BinaryCode += "001";
                 // TO DO SOMETHING
@@ -114,7 +114,7 @@ public class App {
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
                 BinaryCode += funcBinary(0, 13);
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[4]), 3);
-                macCode = Integer.parseInt(BinaryCode, 2);
+                printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("lw")) {
                 BinaryCode += "010";
                 // TO DO SOMETHING
@@ -125,14 +125,14 @@ public class App {
                 } else {
                     BinaryCode += funcBinary(label.get(arrOfdata[4]), 16);
                 }
-                macCode = Integer.parseInt(BinaryCode, 2);
+                printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("sw")) {
                 BinaryCode += "011";
                 // TO DO SOMETHING
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[4]), 16);
-                macCode = Integer.parseInt(BinaryCode, 2);
+                printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("beq")) {
                 BinaryCode += "100";
                 // TO DO SOMETHING
@@ -148,7 +148,7 @@ public class App {
                     }
                 }
                 BinaryCode += funcBinary(dst, 16);
-                macCode = Integer.parseInt(BinaryCode, 2);
+                printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("jalr")) {
                 BinaryCode += "101";
                 // TO DO SOMETHING
@@ -156,39 +156,79 @@ public class App {
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
                 for(int indexz =0; indexz<=15;indexz++)
                     BinaryCode = BinaryCode + "0";
-                macCode = Integer.parseInt(BinaryCode,2);
+                printBiCode = Integer.parseInt(BinaryCode,2);
             } else if (arrOfdata[1].equals("halt")) {
                 BinaryCode += "110";
                 // TO DO SOMETHING
                 for (int indexz = 0; indexz <= 21; indexz++)
                     BinaryCode = BinaryCode + "0";
-                macCode = Integer.parseInt(BinaryCode, 2);
+                printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("noop")) {
                 BinaryCode += "111";
                 // TO DO SOMETHING
                 for (int indexz = 0; indexz <= 21; indexz++)
                     BinaryCode = BinaryCode + "0";
-                macCode = Integer.parseInt(BinaryCode, 2);
+                printBiCode = Integer.parseInt(BinaryCode, 2);
 
             } else if (arrOfdata[1].equals(".fill")) {
                 if (arrOfdata[2].matches("-?(0|[1-9]\\d*)")) {
                     BinaryCode = Integer.toBinaryString(Integer.parseInt(arrOfdata[2]));
                     for (int indexz = BinaryCode.length(); indexz <= 31; indexz++)
                         BinaryCode = "0" + BinaryCode;
-                    macCode = Integer.parseInt(arrOfdata[2]);
+                    printBiCode = Integer.parseInt(arrOfdata[2]);
                 } else {
                     BinaryCode = Integer.toBinaryString(label.get(arrOfdata[2]));
                     for (int indexz = BinaryCode.length(); indexz <= 31; indexz++)
                         BinaryCode = "0" + BinaryCode;
-                    macCode = label.get(arrOfdata[2]);
+                    printBiCode = label.get(arrOfdata[2]);
                 }
             } else {
-                throw new IllegalArgumentException("exit(1)");
+                throw new IllegalArgumentException("exit(1) opcode is undefine.");
             }
-            System.out.println(macCode);
+            macCode[addr] = BinaryCode;
+            System.out.println(printBiCode);
             addr++;
         }
+        
+        Map<String, String> reg = new HashMap<>();
+        reg.put("000", "0");
+        reg.put("001", "0");
+        reg.put("010", "0");
+        reg.put("011", "0");
+        reg.put("100", "0");
+        reg.put("101", "0");
+        reg.put("110", "0");
+        reg.put("111", "0");
 
+        int PC = 0;
+        
+
+        while(!macCode[PC].substring(7, 10).equals("111")){
+            if (macCode[PC].substring(7, 10).equals("000")){
+
+            }
+            if (macCode[PC].substring(7, 10).equals("001")){
+
+            }
+            if (macCode[PC].substring(7, 10).equals("010")){
+
+            }
+            if (macCode[PC].substring(7, 10).equals("011")){
+
+            }
+            if (macCode[PC].substring(7, 10).equals("100")){
+
+            }
+            if (macCode[PC].substring(7, 10).equals("101")){
+
+            }
+            if (macCode[PC].substring(7, 10).equals("110")){
+
+            }
+
+            PC++;
+        }
+        
     }
 
 }
