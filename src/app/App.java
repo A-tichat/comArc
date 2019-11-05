@@ -79,6 +79,14 @@ public class App {
         int r = 0;
         while (data[r] != null) {
             String[] arrOfdatat = data[r].split("	");
+            if(label.containsKey(arrOfdatat[0])){
+                throw new IllegalArgumentException("exit(1) duplicate"); // check same label
+            }
+            
+            if(!arrOfdatat[0].equals("")){
+                if(arrOfdatat[0].length()>6 || arrOfdatat[0].substring(0,1).matches("-?(0|[1-9]\\d*)")) //check size >6? and start with letter?
+                throw new IllegalArgumentException("exit(1) Undefined");
+            }
             if (arrOfdatat[1].equals(".fill")) {
                 if (arrOfdatat[2].matches("-?(0|[1-9]\\d*)")) {
                     label.put(arrOfdatat[0], Integer.parseInt(arrOfdatat[2]));
@@ -89,6 +97,7 @@ public class App {
                 label.put(arrOfdatat[0], r); // set label to addr
                 // label.get(arrOfdata[]) to get addr
             }
+            
             r++;
         }
 
@@ -101,15 +110,35 @@ public class App {
             if (arrOfdata[1].equals("add")) {
                 BinaryCode += "000";
                 // TO DO SOMETHING
+                    if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
+                        if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){ // offsetfield >16 bit?
+                    throw new IllegalArgumentException("exit(1)");
+                        }
+                    } else {
+                        if(label.get(arrOfdata[4])>32767||(label.get(arrOfdata[4])<-32768)){
+                            throw new IllegalArgumentException("exit(1)");
+                    }
+                }
+                
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
                 for (int indexz = 3; indexz <= 15; indexz++)
                     BinaryCode = BinaryCode + "0";
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[4]), 3);
                 macCode = Integer.parseInt(BinaryCode, 2);
-            } else if (arrOfdata[1].equals("nand")) {
+                }
+             else if (arrOfdata[1].equals("nand")) {
                 BinaryCode += "001";
                 // TO DO SOMETHING
+                if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
+                    if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){
+                throw new IllegalArgumentException("exit(1)");
+                    }
+                } else {
+                    if(label.get(arrOfdata[4])>32767||(label.get(arrOfdata[4])<-32768)){
+                        throw new IllegalArgumentException("exit(1)");
+                }
+            }
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
                 BinaryCode += funcBinary(0, 13);
@@ -118,6 +147,15 @@ public class App {
             } else if (arrOfdata[1].equals("lw")) {
                 BinaryCode += "010";
                 // TO DO SOMETHING
+                if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
+                    if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){
+                throw new IllegalArgumentException("exit(1)");
+                    }
+                } else {
+                    if(label.get(arrOfdata[4])>32767||(label.get(arrOfdata[4])<-32768)){
+                        throw new IllegalArgumentException("exit(1)");
+                }
+            }
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
                 if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
@@ -129,6 +167,15 @@ public class App {
             } else if (arrOfdata[1].equals("sw")) {
                 BinaryCode += "011";
                 // TO DO SOMETHING
+                if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
+                    if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){
+                throw new IllegalArgumentException("exit(1)");
+                    }
+                } else {
+                    if(label.get(arrOfdata[4])>32767||(label.get(arrOfdata[4])<-32768)){
+                        throw new IllegalArgumentException("exit(1)");
+                }
+            }
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[4]), 16);
@@ -136,6 +183,15 @@ public class App {
             } else if (arrOfdata[1].equals("beq")) {
                 BinaryCode += "100";
                 // TO DO SOMETHING
+                if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
+                    if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){
+                throw new IllegalArgumentException("exit(1)");
+                    }
+                } else {
+                    if(label.get(arrOfdata[4])>32767||(label.get(arrOfdata[4])<-32768)){
+                        throw new IllegalArgumentException("exit(1)");
+                }
+            }
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
                 int dst = 0;
@@ -156,7 +212,7 @@ public class App {
                 BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
                 for(int indexz =0; indexz<=15;indexz++)
                     BinaryCode = BinaryCode + "0";
-                macCode = Integer.parseInt(BinaryCode,2);
+                    macCode = Integer.parseInt(BinaryCode,2);
             } else if (arrOfdata[1].equals("halt")) {
                 BinaryCode += "110";
                 // TO DO SOMETHING
@@ -188,7 +244,6 @@ public class App {
             System.out.println(macCode);
             addr++;
         }
-
     }
 
 }
