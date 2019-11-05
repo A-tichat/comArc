@@ -152,11 +152,7 @@ public class App {
             } else if (arrOfdata[1].equals("jalr")) {
                 BinaryCode += "101";
                 // TO DO SOMETHING
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
-                for(int indexz =0; indexz<=15;indexz++)
-                    BinaryCode = BinaryCode + "0";
-                macCode = Integer.parseInt(BinaryCode,2);
+                //macCode = Integer.parseInt(BinaryCode,2);
             } else if (arrOfdata[1].equals("halt")) {
                 BinaryCode += "110";
                 // TO DO SOMETHING
@@ -185,10 +181,10 @@ public class App {
             } else {
                 throw new IllegalArgumentException("exit(1)");
             }
-            System.out.println(BinaryCode);
+            System.out.println(macCode);
             addr++;
         }
-        
+
     }
 
 }
