@@ -2,59 +2,11 @@ package app;
 
 import java.io.*;
 import java.util.*;
+import app.binary;
 
-public class App {
-
-    public static String funcTwoCom(StringBuffer str) {
-        int n = str.length();
-
-        int i;
-        for (i = n - 1; i >= 0; i--)
-            if (str.charAt(i) == '1')
-                break;
-
-        if (i == -1)
-            return "1" + str;
-
-        for (int k = i - 1; k >= 0; k--) {
-            if (str.charAt(k) == '1')
-                str.replace(k, k + 1, "0");
-            else
-                str.replace(k, k + 1, "1");
-        }
-
-        return str.toString();
-    }
-
-    public static String funcBinary(int dec, int l) { // 5, 3
-        String bi = "";
-        int i = 0;
-        boolean flag = false;
-        if (dec < 0) {
-            dec = dec * (0 - 1);
-            flag = true;
-        }
-        while (i < l) {
-            if (dec == 0) {
-                bi = "0" + bi;
-                dec = dec / 2;
-            } else if (dec == 1) {
-                bi = "1" + bi;
-                dec = dec / 2;
-            } else {
-                bi = Integer.toString(dec % 2) + bi;
-                dec = dec / 2;
-            }
-            i++;
-        }
-        if (flag) {
-            bi = funcTwoCom(new StringBuffer(bi));
-        }
-
-        return bi;
-    }
-
+public class Assembler {
     public static void main(String[] args) {
+        binary binary = new binary();
         String[] data = new String[100]; // read max 100 line
         int addr = 0;// addr of line
         Map<String, Integer> label = new HashMap<String, Integer>(); // store label of each line
@@ -109,7 +61,6 @@ public class App {
 
             if (arrOfdata[1].equals("add")) {
                 BinaryCode += "000";
-                // TO DO SOMETHING
                     if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
                         if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){ // offsetfield >16 bit?
                     throw new IllegalArgumentException("exit(1)");
@@ -120,15 +71,14 @@ public class App {
                     }
                 }
                 
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[2]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[3]), 3);
                 for (int indexz = 3; indexz <= 15; indexz++)
                     BinaryCode = BinaryCode + "0";
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[4]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[4]), 3);
                 printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("nand")) {
                 BinaryCode += "001";
-                // TO DO SOMETHING
                 if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
                     if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){
                 throw new IllegalArgumentException("exit(1)");
@@ -138,14 +88,13 @@ public class App {
                         throw new IllegalArgumentException("exit(1)");
                 }
             }
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
-                BinaryCode += funcBinary(0, 13);
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[4]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[2]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[3]), 3);
+                BinaryCode += binary.create(0, 13);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[4]), 3);
                 printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("lw")) {
                 BinaryCode += "010";
-                // TO DO SOMETHING
                 if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
                     if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){
                 throw new IllegalArgumentException("exit(1)");
@@ -155,17 +104,16 @@ public class App {
                         throw new IllegalArgumentException("exit(1)");
                 }
             }
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[2]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[3]), 3);
                 if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
-                    BinaryCode += funcBinary(Integer.parseInt(arrOfdata[4]), 16);
+                    BinaryCode += binary.create(Integer.parseInt(arrOfdata[4]), 16);
                 } else {
-                    BinaryCode += funcBinary(label.get(arrOfdata[4]), 16);
+                    BinaryCode += binary.create(label.get(arrOfdata[4]), 16);
                 }
                 printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("sw")) {
                 BinaryCode += "011";
-                // TO DO SOMETHING
                 if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
                     if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){
                 throw new IllegalArgumentException("exit(1)");
@@ -175,13 +123,12 @@ public class App {
                         throw new IllegalArgumentException("exit(1)");
                 }
             }
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[4]), 16);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[2]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[3]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[4]), 16);
                 printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("beq")) {
                 BinaryCode += "100";
-                // TO DO SOMETHING
                 if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
                     if(Integer.parseInt(arrOfdata[4])>32767||Integer.parseInt(arrOfdata[4])<-32768){
                 throw new IllegalArgumentException("exit(1)");
@@ -191,8 +138,8 @@ public class App {
                         throw new IllegalArgumentException("exit(1)");
                 }
             }
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[2]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[3]), 3);
                 int dst = 0;
                 if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
                     dst = Integer.parseInt(arrOfdata[4]);
@@ -202,25 +149,22 @@ public class App {
                         dst = dst * (0 - 1);
                     }
                 }
-                BinaryCode += funcBinary(dst, 16);
+                BinaryCode += binary.create(dst, 16);
                 printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("jalr")) {
                 BinaryCode += "101";
-                // TO DO SOMETHING
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[2]), 3);
-                BinaryCode += funcBinary(Integer.parseInt(arrOfdata[3]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[2]), 3);
+                BinaryCode += binary.create(Integer.parseInt(arrOfdata[3]), 3);
                 for(int indexz =0; indexz<=15;indexz++)
                     BinaryCode = BinaryCode + "0";
                 printBiCode = Integer.parseInt(BinaryCode,2);
             } else if (arrOfdata[1].equals("halt")) {
                 BinaryCode += "110";
-                // TO DO SOMETHING
                 for (int indexz = 0; indexz <= 21; indexz++)
                     BinaryCode = BinaryCode + "0";
                 printBiCode = Integer.parseInt(BinaryCode, 2);
             } else if (arrOfdata[1].equals("noop")) {
                 BinaryCode += "111";
-                // TO DO SOMETHING
                 for (int indexz = 0; indexz <= 21; indexz++)
                     BinaryCode = BinaryCode + "0";
                 printBiCode = Integer.parseInt(BinaryCode, 2);
@@ -257,7 +201,6 @@ public class App {
 
         int PC = 0;
         
-
         while(!macCode[PC].substring(7, 10).equals("111")){
             if (macCode[PC].substring(7, 10).equals("000")){
 
@@ -269,7 +212,6 @@ public class App {
 
             }
             if (macCode[PC].substring(7, 10).equals("011")){
-
             }
             if (macCode[PC].substring(7, 10).equals("100")){
 
