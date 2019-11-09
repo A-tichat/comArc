@@ -22,12 +22,12 @@ public class binary {
         return str.toString();
     }
 
-    public String create(int dec, int l) { // 5, 3
+    public String create(int dec, int l) {
         String bi = "";
         int i = 0;
         boolean flag = false;
         if (dec < 0) {
-            dec = dec * (0 - 1);
+            dec = 0-dec;
             flag = true;
         }
         while (i < l) {
@@ -46,7 +46,6 @@ public class binary {
         if (flag) {
             bi = funcTwoCom(new StringBuffer(bi));
         }
-
         return bi;
     }
 }
