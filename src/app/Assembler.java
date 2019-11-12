@@ -5,6 +5,7 @@ import java.util.*;
 import app.binary;
 
 public class Assembler {
+
     public static void main(String[] args) {
         binary binary = new binary();
         String[] data = new String[100]; // read max 100 line
@@ -181,53 +182,51 @@ public class Assembler {
         for(int i=0;i<=9;i++) reg[i]=0;
 
         int PC = 0;
-
-        while (!mem[PC].substring(7, 10).equals("111")) {
+        reg[3] = 6;
+        boolean jum = false;
+        while (true) {
+            binary.printstate(mem, reg, addr);
             System.out.println("state:");
             System.out.println("    PC "+PC);
+            
             if (mem[PC].substring(7, 10).equals("000")) {
                 //TO DO ADD
-            }
-            if (mem[PC].substring(7, 10).equals("001")) {
+            }else if (mem[PC].substring(7, 10).equals("001")) {
                 //TO DO NAND
             }
-            if (mem[PC].substring(7, 10).equals("010")) {
+            else if (mem[PC].substring(7, 10).equals("010")) {
                 //TO DO LOAD
             }
-            if (mem[PC].substring(7, 10).equals("011")) {
+            else if (mem[PC].substring(7, 10).equals("011")) {
                 //TO DO STORE
             }
-            if (mem[PC].substring(7, 10).equals("100")) {
+            else if (mem[PC].substring(7, 10).equals("100")) {
                 //TO DO BEQ
             }
-            if (mem[PC].substring(7, 10).equals("101")) {
-                reg[Integer.parseInt(mem[PC].substring(13,16))]=PC+1;
-                PC=reg[Integer.parseInt(mem[PC].substring(10,13))];
+            else if (mem[PC].substring(7, 10).equals("101")) {
                 if(mem[PC].substring(10,13).equals(mem[PC].substring(13,16))){
                    int temp = PC+1;
-                    PC = reg[Integer.parseInt(mem[PC].substring(10,13))];
-                    reg[Integer.parseInt(mem[PC].substring(13,16))] = temp;
-                }//TO DO JALR
+                    PC = reg[Integer.parseInt(mem[PC].substring(10,13),2)];
+                    reg[Integer.parseInt(mem[PC].substring(13,16),2)] = temp;
+                }
+                else{
+                    reg[Integer.parseInt(mem[PC].substring(13,16),2)]=PC+1;
+                PC=reg[Integer.parseInt(mem[PC].substring(10,13),2)];
+                }
+                jum=true;
             }
-            if (mem[PC].substring(7, 10).equals("110")) {
+            else if (mem[PC].substring(7, 10).equals("110")) {
                 //TO DO Halt
             }
-
-            PC++;
-            System.out.println("    memory:");
-            for (int i=0;i<addr;i++){
-                if (mem[i].substring(0, 1).equals("1")) {
-                    StringBuffer p = new StringBuffer(mem[i]);
-                    System.out.println("        mem[" + i + "] -" + Integer.parseInt(binary.funcTwoCom(p), 2));
-                }else {
-                    System.out.println("        mem[" + i + "] " + Integer.parseInt(mem[i], 2));
-                }
+            else if (mem[PC].substring(7, 10).equals("111")) {
+                binary.printstate(mem, reg, addr);
+               break; //TO DO Halt
             }
-            System.out.println("    registers:");
-            for (int i=0;i<=9;i++){
-                System.out.println("        reg[" + i + "] " + reg[i]);
+            if (!jum) {
+                PC++; 
+                jum=false;
             }
-            System.out.println("end state:\n");
+            
         }
         
     }
