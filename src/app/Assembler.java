@@ -201,7 +201,13 @@ public class Assembler {
                 //TO DO BEQ
             }
             if (mem[PC].substring(7, 10).equals("101")) {
-                //TO DO JALR
+                reg[Integer.parseInt(mem[PC].substring(13,16))]=PC+1;
+                PC=reg[Integer.parseInt(mem[PC].substring(10,13))];
+                if(mem[PC].substring(10,13).equals(mem[PC].substring(13,16))){
+                   int temp = PC+1;
+                    PC = reg[Integer.parseInt(mem[PC].substring(10,13))];
+                    reg[Integer.parseInt(mem[PC].substring(13,16))] = temp;
+                }//TO DO JALR
             }
             if (mem[PC].substring(7, 10).equals("110")) {
                 //TO DO Halt
