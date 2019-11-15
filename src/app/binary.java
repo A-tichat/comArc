@@ -48,4 +48,20 @@ public class binary {
         }
         return bi;
     }
+    public void printstate(String[] mem,int[] reg,int addr) {
+        System.out.println("    memory:");
+            for (int i=0;i<addr;i++){
+                if (mem[i].substring(0, 1).equals("1")) {
+                    StringBuffer p = new StringBuffer(mem[i]);
+                    System.out.println("        mem[" + i + "] -" + Integer.parseInt(funcTwoCom(p), 2));
+                }else {
+                    System.out.println("        mem[" + i + "] " + Integer.parseInt(mem[i], 2));
+                }
+            }
+            System.out.println("    registers:");
+            for (int i=0;i<=9;i++){
+                System.out.println("        reg[" + i + "] " + reg[i]);
+            }
+            System.out.println("end state:\n");
+    }
 }
