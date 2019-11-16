@@ -1,6 +1,6 @@
 package app;
 
-public class complier {
+public class split {
     public String[] instruction(StringBuffer ins) {
             boolean islabel = false;
             String []arr = new String[5];
@@ -28,7 +28,8 @@ public class complier {
                     if(islabel){
                         arr[0] = label0;
                         islabel = false;
-                    }else if (label0.equals("lw") || label0.equals("add") || label0.equals("beq") || label0.equals("noop") || label0.equals("halt")){
+                    }else if (label0.equals("add") || label0.equals("nand") || label0.equals("lw") ||
+                    label0.equals("sw") || label0.equals("beq") || label0.equals("jalr") || label0.equals("halt") || label0.equals("noop")){
                         arr[1] = label0;
                         if (label0.equals("noop") || label0.equals("halt")) {
                             for (int x=0;x<5;x++){
@@ -47,13 +48,14 @@ public class complier {
                         break;
                     }
                     if (isfill ==2) break;
+                }else if(ins.charAt(j)=='\n'){
+                    break;
                 }
             }
             for (int k=0;k<5;k++){
                 arr[k] = (arr[k] == null) ? "" :arr[k];
             }
             
-
         return arr;
     }
 }

@@ -3,13 +3,13 @@ package app;
 import java.io.*;
 import java.util.*;
 import app.binary;
-import app.complier;
+import app.split;
 
 public class Assembler {
 
     public static void main(String[] args) {
         binary binary = new binary();
-        complier data0 = new complier();
+        split data0 = new split();
         ArrayList<String> data = new ArrayList<String>();
         int addr = 0;// addr of line
         Map<String, Integer> label = new HashMap<String, Integer>();
@@ -36,27 +36,41 @@ public class Assembler {
         // TO STORE LABEL OF EACH LINE
         String[] mem = new String[data.size()];
         int r = 0;
-        while (r<data.size()) {
-            String[] arrOfdatat = data0.instruction(new StringBuffer(data.get(r)));
-            if (label.containsKey(arrOfdatat[0])) {
+        int exten=0;
+        while (r+exten<data.size()) {
+            String[] label0 = data0.instruction(new StringBuffer(data.get(r+exten)));
+            while (label0[1].isEmpty()){
+                label0 = data0.instruction(new StringBuffer(data.get(r+exten)));
+                exten++;
+            }
+            for (int x=0;x<5;x++) System.out.print(label0[x]+" ");
+            System.out.println('\n');
+            if (!label0[2].matches("-?(0|[1-9]\\d*)") || !label0[3].matches("-?(0|[1-9]\\d*)")){
+                if (label0[2].equals(".fill") || label0[2].isEmpty() || label0[3].isEmpty()) {
+
+                }else {
+                    throw new IllegalArgumentException("exit(1) : Assembly code is error!");
+                }
+            }
+            if (label.containsKey(label0[0])) {
                 throw new IllegalArgumentException("exit(1) : Label is duplicate!"); // check same label
             }
 
-            if (!arrOfdatat[0].equals("")) {
-                if (arrOfdatat[0].length() > 6 || arrOfdatat[0].substring(0, 1).matches("-?(0|[1-9]\\d*)")) 
+            if (!label0[0].equals("")) {
+                if (label0[0].length() > 6 || label0[0].substring(0, 1).matches("-?(0|[1-9]\\d*)")) 
                     // check label size > 6? and start with number?
                     throw new IllegalArgumentException("exit(1) : Label is undefined!");
             }
             
-            if (arrOfdatat[1].equals(".fill")) {
-                label.put(arrOfdatat[0], r);
-                if (arrOfdatat[2].matches("-?(0|[1-9]\\d*)")) {
-                    mem[r] = binary.create(binary.binaryToDecimal(arrOfdatat[2], 10), 32);
+            if (label0[1].equals(".fill")) {
+                label.put(label0[0], r);
+                if (label0[2].matches("-?(0|[1-9]\\d*)")) {
+                    mem[r] = binary.create(binary.binaryToDecimal(label0[2], 10), 32);
                 } else {
-                    mem[r] = binary.create(label.get(arrOfdatat[2]), 32);
+                    mem[r] = binary.create(label.get(label0[2]), 32);
                 }
-            }else if (!arrOfdatat[0].equals("")){
-                label.put(arrOfdatat[0], r); // set label to addr
+            }else if (!label0[0].equals("")){
+                label.put(label0[0], r); // set label to addr
             }
             r++;
         }
@@ -64,8 +78,14 @@ public class Assembler {
 
         // TO CREATE MACHINE CODE
         addr = 0;
-        while (addr<data.size()) {
-            String[] arrOfdata = data0.instruction(new StringBuffer(data.get(addr)));
+        exten = 0;
+        while (addr+exten<data.size()) {
+            String[] arrOfdata = data0.instruction(new StringBuffer(data.get(addr+exten)));
+            
+            while (arrOfdata[1].isEmpty()){
+                arrOfdata = data0.instruction(new StringBuffer(data.get(addr+exten)));
+                exten++;
+            }
             String BiCode = "0000000"; // machinecode binary bit
 
             if (arrOfdata[1].equals("add")) {
@@ -253,7 +273,8 @@ public class Assembler {
             ins++;
         }
         System.out.print("\n");
-        binary.printstate(mem, reg, PC, endf);        
+        binary.printstate(mem, reg, PC, endf);
+        System.out.println(("--------------------------------\nProcess exited with value 0\nPress any key to continue . . ."));
     }
 
 }
