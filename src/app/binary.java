@@ -7,12 +7,7 @@ public class binary {
         System.out.println("    PC "+cur);
         System.out.println("    memory:");
             for (int i=0;i<endfile;i++){
-                if (mem[i].substring(0, 1).equals("1")) {
-                    StringBuffer p = new StringBuffer(mem[i]);
-                    System.out.println("        mem[" + i + "] -" + Integer.parseInt(funcTwoCom(p), 2));
-                }else {
-                    System.out.println("        mem[" + i + "] " + Integer.parseInt(mem[i], 2));
-                }
+                    System.out.println("        mem[" + i + "] " + binaryToDecimal(mem[i], 2));
             }
             System.out.println("    registers:");
             for (int i=0;i<=9;i++){
@@ -84,24 +79,28 @@ public class binary {
                 }else{strReturn += '1';}
             }
         }
-        return Integer.parseInt(strReturn,2);
+        return binaryToDecimal(strReturn, 2);
     }
 
-    public int binaryToDecimal(String str) {
+    public int binaryToDecimal(String str, int base) {
+        if (base != 2){
+            return Integer.parseInt(str);
+        }
+        int bit = str.length()-1;
         StringBuffer strBitBuffer = new StringBuffer(str);
         int decimal = 0;
         if (strBitBuffer.charAt(0) == '1') {
             strBitBuffer = new StringBuffer(funcTwoCom(strBitBuffer));
-            for (int i = 31; i > 0; i--) {
+            for (int i = 0; i <= bit; i++) {
                 if (strBitBuffer.charAt(i) == '1') {
-                    decimal += Math.pow(2, i);
+                    decimal += Math.pow(2, bit-i);
                 }
             }
             return decimal*-1;
         }else{
-            for (int i = 31; i > 0; i--) {
+            for (int i = 0; i <= bit; i++) {
                 if (strBitBuffer.charAt(i) == '1') {
-                    decimal += Math.pow(2, i);
+                    decimal += Math.pow(2, bit-i);
                 }
             }
         }
