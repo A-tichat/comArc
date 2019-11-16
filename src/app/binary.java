@@ -1,6 +1,26 @@
 package app;
 
 public class binary {
+
+    public void printstate(String[] mem,int[] reg,int cur,int endfile) {
+        System.out.print("@@@\nstate:\n");
+        System.out.println("    PC "+cur);
+        System.out.println("    memory:");
+            for (int i=0;i<endfile;i++){
+                if (mem[i].substring(0, 1).equals("1")) {
+                    StringBuffer p = new StringBuffer(mem[i]);
+                    System.out.println("        mem[" + i + "] -" + Integer.parseInt(funcTwoCom(p), 2));
+                }else {
+                    System.out.println("        mem[" + i + "] " + Integer.parseInt(mem[i], 2));
+                }
+            }
+            System.out.println("    registers:");
+            for (int i=0;i<=9;i++){
+                System.out.println("        reg[" + i + "] " + reg[i]);
+            }
+            System.out.println("end state:\n");
+    }
+
     public String funcTwoCom(StringBuffer str) {
         int n = str.length();
 
@@ -48,20 +68,22 @@ public class binary {
         }
         return bi;
     }
-    public void printstate(String[] mem,int[] reg,int addr) {
-        System.out.println("    memory:");
-            for (int i=0;i<addr;i++){
-                if (mem[i].substring(0, 1).equals("1")) {
-                    StringBuffer p = new StringBuffer(mem[i]);
-                    System.out.println("        mem[" + i + "] -" + Integer.parseInt(funcTwoCom(p), 2));
-                }else {
-                    System.out.println("        mem[" + i + "] " + Integer.parseInt(mem[i], 2));
-                }
+
+    public int nand(int l, int r){
+        StringBuffer str1Buffer = new StringBuffer(create(l, 32));
+        StringBuffer str2Buffer = new StringBuffer(create(r, 32));
+        String strReturn = "";
+        for (int k = 0; k < 32; k++) {
+            if (str1Buffer.charAt(k) == '1'){
+                if (str2Buffer.charAt(k) == '1'){
+                    strReturn += '0';
+                }else{strReturn += '1';}
+            }else{
+                if (str2Buffer.charAt(k) == '1'){
+                    strReturn += '1';
+                }else{strReturn += '1';}
             }
-            System.out.println("    registers:");
-            for (int i=0;i<=9;i++){
-                System.out.println("        reg[" + i + "] " + reg[i]);
-            }
-            System.out.println("end state:\n");
+        }
+        return Integer.parseInt(strReturn,2);
     }
 }

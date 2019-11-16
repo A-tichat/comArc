@@ -137,6 +137,7 @@ public class Assembler {
                     }
                 }
 
+                //TO DO BEQ
                 BiCode += binary.create(Integer.parseInt(arrOfdata[2]), 3);
                 BiCode += binary.create(Integer.parseInt(arrOfdata[3]), 3);
                 
@@ -146,7 +147,7 @@ public class Assembler {
                     BiCode += binary.create(dst, 16);
                 } else {
                     dst = label.get(arrOfdata[4]);
-                    BiCode += binary.create(dst-addr, 16);
+                    BiCode += binary.create(dst-addr-1, 16);
                 }
                 mem[addr] = BiCode;
             } else if (arrOfdata[1].equals("jalr")) {
@@ -170,8 +171,10 @@ public class Assembler {
             if (mem[addr].substring(0, 1).equals("1")) {
                 StringBuffer p = new StringBuffer(mem[addr]);
                 System.out.println("Memory[" + addr + "]=-" + Integer.parseInt(binary.funcTwoCom(p), 2));
+                //System.out.println("Memory[" + addr + "]=-" + binary.funcTwoCom(p));
             }else {
                 System.out.println("Memory[" + addr + "]=" + Integer.parseInt(mem[addr], 2));
+                //System.out.println("Memory[" + addr + "]=" + mem[addr]);
             } 
             addr++;
         }
@@ -179,20 +182,25 @@ public class Assembler {
 
         //BEGIN Simulator
         int[] reg = new int[10];
-        for(int i=0;i<=9;i++) reg[i]=0;
+        for(int i=0;i<=9;i++) reg[i]=0; //initialize
 
-        int PC = 0;
-        reg[3] = 6;
+        int endf = addr;
+        int PC = 0, ins=0;
         boolean jum = false;
-        while (true) {
-            binary.printstate(mem, reg, addr);
-            System.out.println("state:");
-            System.out.println("    PC "+PC);
+        reg[3] = -1;
+        reg[4] = -2;
+        while (PC>=0 && PC<endf) {
+            jum = false;
+            if (ins>50){
+                break;
+            }
+            binary.printstate(mem, reg, PC, endf);
             
             if (mem[PC].substring(7, 10).equals("000")) {
                 //TO DO ADD
             }else if (mem[PC].substring(7, 10).equals("001")) {
                 //TO DO NAND
+                reg[Integer.parseInt(mem[PC].substring(29),2)] = binary.nand(reg[Integer.parseInt(mem[PC].substring(10,13),2)], reg[Integer.parseInt(mem[PC].substring(13,16),2)]);
             }
             else if (mem[PC].substring(7, 10).equals("010")) {
                 //TO DO LOAD
@@ -202,8 +210,21 @@ public class Assembler {
             }
             else if (mem[PC].substring(7, 10).equals("100")) {
                 //TO DO BEQ
+                if(reg[Integer.parseInt(mem[PC].substring(10,13),2)]  == reg[Integer.parseInt(mem[PC].substring(13,16),2)]){
+                    if (mem[PC].substring(16, 17).equals("1")){
+                        StringBuffer p = new StringBuffer(mem[PC].substring(16));
+                        PC = PC+1-Integer.parseInt(binary.funcTwoCom(p), 2);
+                    }else{
+                        PC = PC+1+Integer.parseInt(mem[PC].substring(16),2);
+                        System.out.println("check PC: "+PC);
+                    }
+                     jum = true;
+                }else{
+                    jum = false;
+                }
             }
             else if (mem[PC].substring(7, 10).equals("101")) {
+                //TO DO jalr
                 if(mem[PC].substring(10,13).equals(mem[PC].substring(13,16))){
                    int temp = PC+1;
                     PC = reg[Integer.parseInt(mem[PC].substring(10,13),2)];
@@ -217,17 +238,22 @@ public class Assembler {
             }
             else if (mem[PC].substring(7, 10).equals("110")) {
                 //TO DO Halt
+                System.out.println("machine halted");
+                System.out.println("total of "+ins+" instructions executed"); 
+                System.out.println("final state of machine:");
+                PC++;
+                break; 
             }
             else if (mem[PC].substring(7, 10).equals("111")) {
-                binary.printstate(mem, reg, addr);
-               break; //TO DO Halt
             }
             if (!jum) {
                 PC++; 
                 jum=false;
             }
-            
+            ins++;
         }
+        System.out.print("\n");
+        binary.printstate(mem, reg, PC, endf);
         
     }
 
