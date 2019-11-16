@@ -198,6 +198,7 @@ public class Assembler {
             
             if (mem[PC].substring(7, 10).equals("000")) {
                 //TO DO ADD
+                reg[Integer.parseInt(mem[PC].substring(29,32))] = reg[Integer.parseInt(mem[PC].substring(10,13))]+reg[Integer.parseInt(mem[PC].substring(13,16))];
             }else if (mem[PC].substring(7, 10).equals("001")) {
                 //TO DO NAND
                 reg[Integer.parseInt(mem[PC].substring(29),2)] = binary.nand(reg[Integer.parseInt(mem[PC].substring(10,13),2)], reg[Integer.parseInt(mem[PC].substring(13,16),2)]);

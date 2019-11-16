@@ -86,4 +86,25 @@ public class binary {
         }
         return Integer.parseInt(strReturn,2);
     }
+
+    public int binaryToDecimal(String str) {
+        StringBuffer strBitBuffer = new StringBuffer(str);
+        int decimal = 0;
+        if (strBitBuffer.charAt(0) == '1') {
+            strBitBuffer = new StringBuffer(funcTwoCom(strBitBuffer));
+            for (int i = 31; i > 0; i--) {
+                if (strBitBuffer.charAt(i) == '1') {
+                    decimal += Math.pow(2, i);
+                }
+            }
+            return decimal*-1;
+        }else{
+            for (int i = 31; i > 0; i--) {
+                if (strBitBuffer.charAt(i) == '1') {
+                    decimal += Math.pow(2, i);
+                }
+            }
+        }
+        return decimal;
+    }
 }
