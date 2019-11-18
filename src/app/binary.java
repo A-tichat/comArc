@@ -1,16 +1,18 @@
 package app;
 
+import java.util.ArrayList;
+
 public class binary {
 
-    public void printstate(String[] mem,int[] reg,int cur,int endfile) {
+    public void printstate(ArrayList<String> mem,int[] reg,int cur,int endfile) {
         System.out.print("@@@\nstate:\n");
         System.out.println("    PC "+cur);
         System.out.println("    memory:");
             for (int i=0;i<endfile;i++){
-                    System.out.println("        mem[" + i + "] " + binaryToDecimal(mem[i], 2));
+                    System.out.println("        mem[" + i + "] " + binaryToDecimal(mem.get(i), 2));
             }
             System.out.println("    registers:");
-            for (int i=0;i<=9;i++){
+            for (int i=0;i<8;i++){
                 System.out.println("        reg[" + i + "] " + reg[i]);
             }
             System.out.println("end state:\n");
@@ -89,7 +91,7 @@ public class binary {
         int bit = str.length()-1;
         StringBuffer strBitBuffer = new StringBuffer(str);
         int decimal = 0;
-        if (strBitBuffer.charAt(0) == '1') {
+        if (strBitBuffer.charAt(0) == '1' && str.length()>3) {
             strBitBuffer = new StringBuffer(funcTwoCom(strBitBuffer));
             for (int i = 0; i <= bit; i++) {
                 if (strBitBuffer.charAt(i) == '1') {

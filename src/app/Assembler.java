@@ -18,7 +18,7 @@ public class Assembler {
 
         // READ ASSEMBLEY FORM INPUT FILE MUST'T READ
         try {
-            File myObj = new File("assembly/count5to0.txt");
+            File myObj = new File("assembly/multi.txt");
             Scanner myReader = new Scanner(myObj);
             addr = 0;
             while (myReader.hasNextLine()) {
@@ -34,7 +34,8 @@ public class Assembler {
         }
         
         // TO STORE LABEL OF EACH LINE
-        String[] mem = new String[data.size()];
+        ArrayList<String> mem = new ArrayList<String>();
+        for (int index=0;index<data.size();index++) mem.add("");//initial memory
         int r = 0;
         int exten=0;
         while (r+exten<data.size()) {
@@ -43,8 +44,6 @@ public class Assembler {
                 label0 = data0.instruction(new StringBuffer(data.get(r+exten)));
                 exten++;
             }
-            for (int x=0;x<5;x++) System.out.print(label0[x]+" ");
-            System.out.println('\n');
             if (!label0[2].matches("-?(0|[1-9]\\d*)") || !label0[3].matches("-?(0|[1-9]\\d*)")){
                 if (label0[2].equals(".fill") || label0[2].isEmpty() || label0[3].isEmpty()) {
 
@@ -65,9 +64,9 @@ public class Assembler {
             if (label0[1].equals(".fill")) {
                 label.put(label0[0], r);
                 if (label0[2].matches("-?(0|[1-9]\\d*)")) {
-                    mem[r] = binary.create(binary.binaryToDecimal(label0[2], 10), 32);
+                    mem.set(r, binary.create(binary.binaryToDecimal(label0[2], 10), 32));
                 } else {
-                    mem[r] = binary.create(label.get(label0[2]), 32);
+                    mem.set(r, binary.create(label.get(label0[2]), 32));
                 }
             }else if (!label0[0].equals("")){
                 label.put(label0[0], r); // set label to addr
@@ -94,14 +93,14 @@ public class Assembler {
                 BiCode += binary.create(binary.binaryToDecimal(arrOfdata[3], 10), 3);
                 BiCode += binary.create(0, 13);
                 BiCode += binary.create(binary.binaryToDecimal(arrOfdata[4], 10), 3);
-                mem[addr] = BiCode;
+                mem.set(addr, BiCode);
             } else if (arrOfdata[1].equals("nand")) {
                 BiCode += "001";
                 BiCode += binary.create(binary.binaryToDecimal(arrOfdata[2], 10), 3);
                 BiCode += binary.create(binary.binaryToDecimal(arrOfdata[3], 10), 3);
                 BiCode += binary.create(0, 13);
                 BiCode += binary.create(binary.binaryToDecimal(arrOfdata[4], 10), 3);
-                mem[addr] = BiCode;
+                mem.set(addr, BiCode);
             } else if (arrOfdata[1].equals("lw")) {
                 BiCode += "010";
                 //DETEC ERROR
@@ -123,7 +122,7 @@ public class Assembler {
                 } else {
                     BiCode += binary.create(label.get(arrOfdata[4]), 16);
                 }
-                mem[addr] = BiCode;
+                mem.set(addr, BiCode);
             } else if (arrOfdata[1].equals("sw")) {
                 BiCode += "011";
                 //DETEC ERROR
@@ -145,7 +144,7 @@ public class Assembler {
                 } else {
                     BiCode += binary.create(label.get(arrOfdata[4]), 16);
                 }
-                mem[addr] = BiCode;
+                mem.set(addr, BiCode);
             } else if (arrOfdata[1].equals("beq")) {
                 BiCode += "100";
                 //DETEC ERROR
@@ -172,90 +171,93 @@ public class Assembler {
                     dst = label.get(arrOfdata[4]);
                     BiCode += binary.create(dst-addr-1, 16);
                 }
-                mem[addr] = BiCode;
+                mem.set(addr, BiCode);
             } else if (arrOfdata[1].equals("jalr")) {
                 BiCode += "101";
                 BiCode += binary.create(binary.binaryToDecimal(arrOfdata[2], 10), 3);
                 BiCode += binary.create(binary.binaryToDecimal(arrOfdata[3], 10), 3);
                 BiCode += binary.create(0, 16);
-                mem[addr] = BiCode;
+                mem.set(addr, BiCode);
             } else if (arrOfdata[1].equals("halt")) {
                 BiCode += "110";
                 BiCode += binary.create(0, 22);
-                mem[addr] = BiCode;
+                mem.set(addr, BiCode);
             } else if (arrOfdata[1].equals("noop")) {
                 BiCode += "111";
                 BiCode += binary.create(0, 22);
-                mem[addr] = BiCode;
+                mem.set(addr, BiCode);
             } else if (arrOfdata[1].equals(".fill")) {
             } else {
                 throw new IllegalArgumentException("exit(1) opcode is undefine.");
             }
-            System.out.println("Memory[" + addr + "]=" + binary.binaryToDecimal(mem[addr], 2));
-            //System.out.println("Memory[" + addr + "]=" + mem[addr]);
+            System.out.println("Memory[" + addr + "]=" + binary.binaryToDecimal(mem.get(addr), 2));
+            //System.out.println("Memory[" + addr + "]=" + mem.get(addr));
             addr++;
         }
         System.out.println("\n");
 
         //BEGIN Simulator
-        int[] reg = new int[10];
-        for(int i=0;i<=9;i++) reg[i]=0; //initialize
-
+        int[] reg = new int[8];
+        for(int i=0;i<8;i++) reg[i]=0; //initialize
+        
         int endf = addr;
         int PC = 0, ins=0;
         boolean jum = false;
-        while (PC>=0 && PC<endf) {
+        while (PC<endf) {
+            if (PC<0) throw new IllegalArgumentException("exit(1) infiniteloop.");
             jum = false;
-            if (ins>50){
-                break;
-            }
-            binary.printstate(mem, reg, PC, endf);
+            binary.printstate(mem, reg, PC, mem.size());
             
-            if (mem[PC].substring(7, 10).equals("000")) {
+            if (mem.get(PC).substring(7, 10).equals("000")) {
                 //TO DO ADD
-                reg[binary.binaryToDecimal(mem[PC].substring(29), 2)] = reg[binary.binaryToDecimal(mem[PC].substring(10,13), 2)]+reg[binary.binaryToDecimal(mem[PC].substring(13,16), 2)];
-            }else if (mem[PC].substring(7, 10).equals("001")) {
+                reg[binary.binaryToDecimal(mem.get(PC).substring(29), 2)] = reg[binary.binaryToDecimal(mem.get(PC).substring(10,13), 2)]+reg[binary.binaryToDecimal(mem.get(PC).substring(13,16), 2)];
+            }else if (mem.get(PC).substring(7, 10).equals("001")) {
                 //TO DO NAND
-                reg[binary.binaryToDecimal(mem[PC].substring(29), 2)] = binary.nand(reg[binary.binaryToDecimal(mem[PC].substring(10,13), 2)], reg[binary.binaryToDecimal(mem[PC].substring(13,16), 2)]);
+                reg[binary.binaryToDecimal(mem.get(PC).substring(29), 2)] = binary.nand(reg[binary.binaryToDecimal(mem.get(PC).substring(10,13), 2)], reg[binary.binaryToDecimal(mem.get(PC).substring(13,16), 2)]);
             }
-            else if (mem[PC].substring(7, 10).equals("010")) {
+            else if (mem.get(PC).substring(7, 10).equals("010")) {
                 //TO DO LOAD
-                int memAddr = binary.binaryToDecimal(mem[PC].substring(16), 2)+reg[binary.binaryToDecimal(mem[PC].substring(10,13), 2)];
-                reg[binary.binaryToDecimal(mem[PC].substring(13, 16), 2)] = binary.binaryToDecimal(mem[memAddr], 2);
+                int memAddr = binary.binaryToDecimal(mem.get(PC).substring(16), 2)+reg[binary.binaryToDecimal(mem.get(PC).substring(10,13), 2)];
+                reg[binary.binaryToDecimal(mem.get(PC).substring(13, 16), 2)] = binary.binaryToDecimal(mem.get(memAddr), 2);
             }
-            else if (mem[PC].substring(7, 10).equals("011")) {
+            else if (mem.get(PC).substring(7, 10).equals("011")) {
                 //TO DO STORE
-                int memAddr = binary.binaryToDecimal(mem[binary.binaryToDecimal(mem[PC].substring(16), 2)], 2)+reg[binary.binaryToDecimal(mem[PC].substring(10,13), 2)];
-                mem[memAddr] =  binary.create(reg[binary.binaryToDecimal(mem[PC].substring(13,16),2)], 32);
+                int memAddr = binary.binaryToDecimal(mem.get(PC).substring(16), 2)+reg[binary.binaryToDecimal(mem.get(PC).substring(10,13), 2)];
+                if (memAddr>=mem.size()){
+                    while(memAddr>=mem.size()){
+                        mem.add("0");
+                    }
+                }
+                mem.set(memAddr,binary.create(reg[binary.binaryToDecimal(mem.get(PC).substring(13,16),2)], 32));
             }
-            else if (mem[PC].substring(7, 10).equals("100")) {
+            else if (mem.get(PC).substring(7, 10).equals("100")) {
                 //TO DO BEQ
-                if(reg[binary.binaryToDecimal(mem[PC].substring(10,13), 2)]  == reg[binary.binaryToDecimal(mem[PC].substring(13,16), 2)]){
-                    if (mem[PC].substring(16, 17).equals("1")){
-                        StringBuffer p = new StringBuffer(mem[PC].substring(16));
+                if(reg[binary.binaryToDecimal(mem.get(PC).substring(10,13), 2)]  == reg[binary.binaryToDecimal(mem.get(PC).substring(13,16), 2)]){
+                    if (mem.get(PC).substring(16, 17).equals("1")){
+                        StringBuffer p = new StringBuffer(mem.get(PC).substring(16));
                         PC = PC+1-binary.binaryToDecimal(binary.funcTwoCom(p), 2);
                     }else{
-                        PC = PC+1+binary.binaryToDecimal(mem[PC].substring(16), 2);
+                        PC = PC+1+binary.binaryToDecimal(mem.get(PC).substring(16), 2);
                     }
                      jum = true;
                 }else{
                     jum = false;
                 }
             }
-            else if (mem[PC].substring(7, 10).equals("101")) {
+            else if (mem.get(PC).substring(7, 10).equals("101")) {
                 //TO DO jalr
-                if(mem[PC].substring(10,13).equals(mem[PC].substring(13,16))){
+                if(mem.get(PC).substring(10,13).equals(mem.get(PC).substring(13,16))){
                    int temp = PC+1;
-                    PC = reg[binary.binaryToDecimal(mem[PC].substring(10,13), 2)];
-                    reg[binary.binaryToDecimal(mem[PC].substring(13,16), 2)] = temp;
+                    PC = reg[binary.binaryToDecimal(mem.get(PC).substring(10,13), 2)];
+                    reg[binary.binaryToDecimal(mem.get(PC).substring(13,16), 2)] = temp;
                 }
                 else{
-                    reg[binary.binaryToDecimal(mem[PC].substring(13,16), 2)]=PC+1;
-                PC=reg[binary.binaryToDecimal(mem[PC].substring(10,13), 2)];
+                    reg[binary.binaryToDecimal(mem.get(PC).substring(13,16), 2)]=PC+1;
+                PC=reg[binary.binaryToDecimal(mem.get(PC).substring(10,13), 2)];
                 }
                 jum=true;
             }
-            else if (mem[PC].substring(7, 10).equals("110")) {
+            else if (mem.get(PC).substring(7, 10).equals("110")) {
                 //TO DO Halt
                 PC++;
                 ins++;
@@ -264,7 +266,7 @@ public class Assembler {
                 System.out.println("final state of machine:");
                 break; 
             }
-            else if (mem[PC].substring(7, 10).equals("111")) {
+            else if (mem.get(PC).substring(7, 10).equals("111")) {
             }
             if (!jum) {
                 PC++; 
@@ -273,7 +275,7 @@ public class Assembler {
             ins++;
         }
         System.out.print("\n");
-        binary.printstate(mem, reg, PC, endf);
+        binary.printstate(mem, reg, PC, mem.size());
         System.out.println(("--------------------------------\nProcess exited with value 0\nPress any key to continue . . ."));
     }
 

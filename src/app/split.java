@@ -8,6 +8,7 @@ public class split {
             int isfill = 0;
             for (int j=0;j<ins.length();j++){
                 if (Character.isLetter(ins.charAt(j)) || Character.isDigit(ins.charAt(j))){
+                    islabel = false;
                     if (j==0){
                         islabel = true;
                     }
@@ -17,7 +18,7 @@ public class split {
                         isfill++;
                         continue;
                     }else{
-                        while(ins.charAt(j)!='\t' && ins.charAt(j)!=' '){
+                        while(j<ins.length() && ins.charAt(j)!='\t' && ins.charAt(j)!=' '){
                             if (Character.isDigit(ins.charAt(j)) && ins.charAt(j-1) == '-'){
                                 label0 += ins.charAt(j-1);
                             }
