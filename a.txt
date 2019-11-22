@@ -1,0 +1,3 @@
+./src/app/Assembler.java
+./src/app/binary.java
+./src/app/split.java

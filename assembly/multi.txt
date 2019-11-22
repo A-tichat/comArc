@@ -16,7 +16,7 @@ skip    add     3   3   3
         add     4   4   4
         beq     0   0   loop
 end     halt
-mcand   .fill   32767
-mplier  .fill   32767
+mcand   .fill   2
+mplier  .fill   12
 pos16   .fill   16
 pos1    .fill   1
