@@ -8,26 +8,26 @@ start   jalr    6   7
 combi   beq     0   2   exit1   if r==0 return
         beq     1   2   exit1   if n==r return
         lw      0   4   pos1    reg4 = 1
+        add     4   5   5       add stack
         sw      5   7   stack   store addr
         add     5   4   5       add stack
         sw      5   1   stack   store n
         add     5   4   5       add stack
         sw      5   2   stack   store r
-        add     5   4   5       add stack
         lw      0   4   neg1    reg4 = -1
         add     1   4   1       n-1
         jalr    6   7
         lw      0   4   neg1    reg4 = -1
-        add     5   4   5       sub stack
         lw      5   2   stack   load r
         add     5   4   5       sub stack
         lw      5   1   stack   load n
+        add     5   4   5       sub stack
         add     1   4   1       n(lw)-1
         add     2   4   2       r(lw)-1
         jalr    6   7
         lw      0   4   neg1    reg4 = -1
-        add     5   4   5       sub stack
         lw      5   7   stack   load addr
+        add     5   4   5       sub stack
         jalr    7   0
 exit1   lw      0   4   pos1    return 1
         add     3   4   3       combi two return
