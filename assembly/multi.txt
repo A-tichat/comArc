@@ -20,8 +20,8 @@ exit1   add     3   1   1
         beq     3   1   end
 exit2   add     2   1   1
 end     halt
-mcand   .fill   0
-mplier  .fill   34904
+mcand   .fill   10383
+mplier  .fill   32766
 pos16   .fill   16
 pos1    .fill   1
 neg1    .fill   -1
