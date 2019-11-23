@@ -1,7 +1,15 @@
-        lw      0   2   input   
+        lw      0   2   input
+        lw      0   7   num
+        lw      0   6   pos1
+        lw      0   1   pos1  
         lw      0   3   pos1
         lw      0   4   pos2
-        lw      0   6   neg1
+pnum    beq     6   7   start
+        add     4   4   4
+        add     6   1   6
+        beq     0   0   pnum
+start   lw      0   6   neg1
+        add     0   0   1
 loop    nand    2   4   5
         beq     5   6   skip
         add     1   3   1       add output on reg1
@@ -10,12 +18,16 @@ skip    add     3   3   3
         beq     4   0   done
         beq     0   0   loop
 done    lw      0   4   bitl
+pnumr   beq     3   4   end
         nand    4   2   5
-        beq     5   6   pos
-        add     1   4   1
-pos     halt
+        beq     5   6   1
+        add     1   3   1
+        add     3   3   3
+        beq     0   0   pnumr
+end     halt
 pos1    .fill   1
 pos2    .fill   2
 neg1    .fill   -1
 bitl    .fill   -2147483648
-input   .fill   6
+input   .fill   -96
+num     .fill   5
