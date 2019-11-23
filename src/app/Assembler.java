@@ -8,6 +8,7 @@ import app.split;
 public class Assembler {
 
     public static void main(String[] args) {
+        String inputStr="combination.txt";
         binary binary = new binary();
         split data0 = new split();
         ArrayList<String> data = new ArrayList<String>();
@@ -18,7 +19,7 @@ public class Assembler {
 
         // READ ASSEMBLEY FORM INPUT FILE
         try {
-            File myObj = new File("assembly/srl.txt");
+            File myObj = new File("assembly/"+inputStr);
             Scanner myReader = new Scanner(myObj);
             addr = 0;
             while (myReader.hasNextLine()) {
@@ -80,14 +81,13 @@ public class Assembler {
         addr = 0;
         exten = 0;
         try {
-            File myObj = new File("output/machineCode.txt");
+            File myObj = new File("output/machineCode"+inputStr);
             if (!myObj.createNewFile()) {
                 myObj.delete();
                 myObj.createNewFile();
-                System.out.println("File already exists.");
             }
 
-            FileWriter myWriter = new FileWriter("output/machineCode.txt");
+            FileWriter myWriter = new FileWriter("output/machineCode"+inputStr);
             while (addr + exten < data.size()) {
                 String[] arrOfdata = data0.instruction(new StringBuffer(data.get(addr + exten)));
 
@@ -125,7 +125,7 @@ public class Assembler {
                             throw new IllegalArgumentException("exit(1) : Offsetfield more then 16 bit!");
                         }
                     }
-
+                    //add code lw
                     BiCode.append(binary.create(Integer.valueOf(arrOfdata[2], 10), 3));
                     BiCode.append(binary.create(Integer.valueOf(arrOfdata[3], 10), 3));
                     if (arrOfdata[4].matches("-?(0|[1-9]\\d*)")) {
@@ -223,12 +223,10 @@ public class Assembler {
 
         int endf = addr;
         int PC = 0, ins = 0;
-        boolean jum = false;
         while (PC < endf) {
             reg[0] = 0;
-            if (PC < 0 || mem.size() > 200)
+            if (PC < 0 || mem.size() > 200 || ins<0 || ins > 100000)
                 throw new IllegalArgumentException("exit(1) infiniteloop.");
-            jum = false;
             binary.printstate(mem, reg, PC, mem.size());
 
             if (mem.get(PC).substring(7, 10).equals("000")) {
@@ -263,25 +261,21 @@ public class Assembler {
                         .biToDec(new StringBuffer(mem.get(PC).substring(13, 16)), 2)]) {
                     if (mem.get(PC).substring(16, 17).equals("1")) {
                         StringBuffer p = new StringBuffer(mem.get(PC).substring(16));
-                        PC = PC + 1 - binary.biToDec(new StringBuffer(binary.funcTwoCom(p)), 2);
+                        PC = PC - binary.biToDec(new StringBuffer(binary.funcTwoCom(p)), 2);
                     } else {
-                        PC = PC + 1 + binary.biToDec(new StringBuffer(mem.get(PC).substring(16)), 2);
+                        PC = PC + binary.biToDec(new StringBuffer(mem.get(PC).substring(16)), 2);
                     }
-                    jum = true;
-                } else {
-                    jum = false;
                 }
             } else if (mem.get(PC).substring(7, 10).equals("101")) {
                 // TO DO jalr
                 if (mem.get(PC).substring(10, 13).equals(mem.get(PC).substring(13, 16))) {
                     int temp = PC + 1;
-                    PC = reg[binary.biToDec(new StringBuffer(mem.get(PC).substring(10, 13)), 2)];
+                    PC = reg[binary.biToDec(new StringBuffer(mem.get(PC).substring(10, 13)), 2)] - 1;
                     reg[binary.biToDec(new StringBuffer(mem.get(PC).substring(13, 16)), 2)] = temp;
                 } else {
                     reg[binary.biToDec(new StringBuffer(mem.get(PC).substring(13, 16)), 2)] = PC + 1;
-                    PC = reg[binary.biToDec(new StringBuffer(mem.get(PC).substring(10, 13)), 2)];
+                    PC = reg[binary.biToDec(new StringBuffer(mem.get(PC).substring(10, 13)), 2)] - 1;
                 }
-                jum = true;
             } else if (mem.get(PC).substring(7, 10).equals("110")) {
                 // TO DO Halt
                 PC++;
@@ -289,19 +283,16 @@ public class Assembler {
                 System.out.println("machine halted");
                 System.out.println("total of " + ins + " instructions executed");
                 System.out.println("final state of machine:");
+                System.out.print("\n");
+                binary.printstate(mem, reg, PC, mem.size());
+                System.out.println(
+                ("--------------------------------\nProcess exited with value 0\nPress any key to continue . . ."));
                 break;
             } else if (mem.get(PC).substring(7, 10).equals("111")) {
             }
-            if (!jum) {
-                PC++;
-                jum = false;
-            }
+            PC++;
             ins++;
         }
-        System.out.print("\n");
-        binary.printstate(mem, reg, PC, mem.size());
-        System.out.println(
-                ("--------------------------------\nProcess exited with value 0\nPress any key to continue . . ."));
     }
 
 }

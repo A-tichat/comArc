@@ -59,14 +59,6 @@ public class binary {
         return bi;
     }
 
-    public String extend(String bi, int l) {
-        String bi_return = bi;
-        for (int i=bi.length()-1;i<l;i++){
-            bi_return = "0" + bi_return;
-        }
-        return bi_return;
-    }
-
     public int nand(int l, int r){
         StringBuffer str1Buffer = new StringBuffer(create(l, 32));
         StringBuffer str2Buffer = new StringBuffer(create(r, 32));
