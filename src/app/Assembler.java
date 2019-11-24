@@ -202,8 +202,8 @@ public class Assembler {
                 } else {
                     throw new IllegalArgumentException("exit(1) opcode is undefine.");
                 }
-                String wr = "Memory[" + addr + "]=" + binary.biToDec(new StringBuffer(mem.get(addr)), 2);
-                System.out.println(wr);
+                String wr = "Memory[" + addr + "]=" + mem.get(addr);
+                System.out.println("Memory[" + addr + "]=" + binary.biToDec(new StringBuffer(mem.get(addr)), 2));
                 myWriter.write(wr + "\n");
                 // System.out.println("Memory[" + addr + "]=" + mem.get(addr));
                 addr++;
