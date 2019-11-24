@@ -8,7 +8,6 @@ import app.split;
 public class Assembler {
 
     public static void main(String[] args) {
-        String inputStr="combination.txt";
         binary binary = new binary();
         split data0 = new split();
         ArrayList<String> data = new ArrayList<String>();
@@ -19,7 +18,7 @@ public class Assembler {
 
         // READ ASSEMBLEY FORM INPUT FILE
         try {
-            File myObj = new File("assembly/"+inputStr);
+            File myObj = new File("assembly/"+args[0]);
             Scanner myReader = new Scanner(myObj);
             addr = 0;
             while (myReader.hasNextLine()) {
@@ -81,13 +80,13 @@ public class Assembler {
         addr = 0;
         exten = 0;
         try {
-            File myObj = new File("output/machineCode"+inputStr);
+            File myObj = new File("output/machineCode"+args[0]);
             if (!myObj.createNewFile()) {
                 myObj.delete();
                 myObj.createNewFile();
             }
 
-            FileWriter myWriter = new FileWriter("output/machineCode"+inputStr);
+            FileWriter myWriter = new FileWriter("output/machineCode"+args[0]);
             while (addr + exten < data.size()) {
                 String[] arrOfdata = data0.instruction(new StringBuffer(data.get(addr + exten)));
 

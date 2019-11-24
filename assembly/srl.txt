@@ -18,16 +18,16 @@ skip    add     3   3   3
         beq     4   0   done
         beq     0   0   loop
 done    lw      0   4   bitl
-pnumr   beq     3   4   end
+extend  beq     3   0   end
         nand    4   2   5
         beq     5   6   1
         add     1   3   1
         add     3   3   3
-        beq     0   0   pnumr
+        beq     0   0   extend
 end     halt
 pos1    .fill   1
 pos2    .fill   2
 neg1    .fill   -1
 bitl    .fill   -2147483648
-input   .fill   -96
+input   .fill   -100
 num     .fill   5
